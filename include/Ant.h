@@ -17,6 +17,8 @@ private:
   void randomMove(float deltaTime);
   // void moveHome(float deltaTime);
   sf::Vector2f clampVector(const sf::Vector2f &v, float maxValue);
+  float magnitude(sf::Vector2f);
+  sf::Vector2f normalize(const sf::Vector2f &v);
 
   sf::RectangleShape shape;
 
@@ -31,5 +33,5 @@ private:
 
   float maxSpeed{50.0f};
   float steerStrength{2.0f};
-  float wanderStrength{0.5f};
+  float wanderStrength{1.0f};
 };

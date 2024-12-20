@@ -14,9 +14,11 @@ Ant::Ant(unsigned int windowWidth, unsigned int windowHeight)
   desiredDirection = sf::Vector2f(dis(gen), dis(gen));
 
   // normalize direction
-  float length = std::sqrt(desiredDirection.x * desiredDirection.x +
-                           desiredDirection.y * desiredDirection.y);
-  desiredDirection /= length;
+  desiredDirection = normalize(desiredDirection);
+
+  // Initialize with random velocity
+  velocity.x = dis(gen);
+  velocity.y = dis(gen);
 }
 
 void Ant::update(float deltaTime) { randomMove(deltaTime); }
@@ -55,11 +57,9 @@ void Ant::randomMove(float deltaTime) {
   // ONLY to change the direction of the ant's velocity vector and not its
   // magnitude think of it light a compass needle, we only care which way it
   // points (desiredDirection) and not how long the needle is (magnitude)
-  float length = std::sqrt(desiredDirection.x * desiredDirection.x +
-                           desiredDirection.y * desiredDirection.y);
-  desiredDirection /= length;
+  desiredDirection = normalize(desiredDirection);
 
-  sf::Vector2f desiredVelocity = desiredDirection * maxSpeed;
+  sf::Vector2f desiredVelocity = (position - desiredDirection) * maxSpeed;
 
   sf::Vector2f velocityAdjustment =
       (desiredVelocity - velocity) * steerStrength;
@@ -104,4 +104,16 @@ sf::Vector2f Ant::clampVector(const sf::Vector2f &v, float maxValue) {
     return v * (maxValue / magnitude);
   }
   return v;
+}
+
+float Ant::magnitude(sf::Vector2f v) {
+  return std::sqrt(v.x * v.x + v.y * v.y);
+}
+
+sf::Vector2f Ant::normalize(const sf::Vector2f &v) {
+  float length = std::sqrt(v.x * v.x + v.y * v.y);
+  if (length != 0) {
+    return v / length;
+  }
+  return v; // Return unchanged if length is 0
 }
