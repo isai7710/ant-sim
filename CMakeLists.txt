@@ -15,6 +15,8 @@ set(SOURCES
     src/Food.cpp
     src/Home.cpp
     src/World.cpp
+    src/SeekBehavior.cpp
+    src/WanderBehavior.cpp
 )
 
 # Header files
@@ -23,6 +25,9 @@ set(HEADERS
     include/Food.h
     include/Home.h
     include/World.h
+    include/IMovementBehavior.h
+    include/SeekBehavior.h
+    include/WanderBehavior.h
 )
 
 # Add executable
