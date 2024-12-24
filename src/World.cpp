@@ -1,28 +1,30 @@
 #include "World.h"
-#include <random>
+#include "SeekBehavior.h"
+#include "WanderBehavior.h"
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <cmath>
+#include <memory>
 
 World::World(unsigned int width, unsigned int height)
     : width(width), height(height) {
-  setupHome();
+  ants.reserve(NUM_ANTS);
   setupFood();
+  setupHome();
   setupAnts();
 }
 
 void World::update(float deltaTime) {
   for (auto &ant : ants) {
     ant.update(deltaTime);
-    /*
-      // Basic collision detection with food
-      if (!ant.hasFoundFood()) {
-        for (const auto &food : foodItems) {
-          sf::Vector2f diff = food.getPosition() - ant.getPosition();
-          if (std::sqrt(diff.x * diff.x + diff.y * diff.y) < 10.f) {
-            ant.setFoundFood(true);
-            break;
-          }
-        }
+  }
+  if (hasTarget) {
+    for (auto &ant : ants) {
+      sf::Vector2f error = targetPosition - ant.getPosition();
+      if (std::sqrt(error.x * error.x + error.y * error.y) < 2.0f) {
+        clearTarget();
       }
-    */
+    }
   }
 }
 
@@ -34,18 +36,42 @@ void World::draw(sf::RenderWindow &window) {
   for (const auto &ant : ants) {
     window.draw(ant);
   }
+  if (hasTarget) {
+    window.draw(target);
+  }
+}
+
+void World::updateTarget(sf::Vector2f position) {
+  if (targetPosition == position) {
+    clearTarget();
+    return;
+  } else {
+    targetPosition = position;
+    target.setPosition(targetPosition.x - target.getRadius(),
+                       targetPosition.y - target.getRadius());
+    target.setFillColor(sf::Color::Green);
+    hasTarget = true;
+  }
+  for (auto &ant : ants) {
+    auto seekBehavior = std::make_unique<SeekBehavior>(targetPosition);
+    ant.setBehavior(std::move(seekBehavior));
+  }
+}
+
+sf::Vector2f World::getTargetPosition() { return targetPosition; }
+
+void World::setupAnts() {
+  for (std::size_t i = 0; i < NUM_ANTS; i++) {
+    Ant ant(width, height);
+    ant.setPosition(sf::Vector2f(width / 2.f, height / 2.f));
+    auto wanderBehavior = std::make_unique<WanderBehavior>();
+    ant.setBehavior(std::move(wanderBehavior));
+    ants.push_back(std::move(ant));
+  }
 }
 
 void World::setupHome() {
   home.setPosition(sf::Vector2f(width / 2.f, height / 2.f));
-}
-
-void World::setupAnts() {
-  for (int i = 0; i < numAnts; i++) {
-    Ant ant(width, height);
-    ant.setPosition(sf::Vector2f(width / 2.f, height / 2.f));
-    ants.push_back(ant);
-  }
 }
 
 void World::setupFood() {
@@ -55,7 +81,7 @@ void World::setupFood() {
   std::uniform_real_distribution<float> disY(0.f, static_cast<float>(height));
   std::uniform_real_distribution<float> disOffset(-20.f, 20.f);
 
-  for (int i = 0; i < numFoodClumps; i++) {
+  for (std::size_t i = 0; i < NUM_FOOD_CLUMPS; i++) {
     float centerX = disX(gen);
     float centerY = disY(gen);
 
@@ -66,7 +92,7 @@ void World::setupFood() {
       centerY = disY(gen);
     }
 
-    for (int j = 0; j < numFoodCrumbsPerClump; j++) {
+    for (std::size_t j = 0; j < NUM_FOOD_CRUMBS_PER_CLUMP; j++) {
       Food food;
       float offsetX = disOffset(gen);
       float offsetY = disOffset(gen);
@@ -76,5 +102,15 @@ void World::setupFood() {
                    std::min(static_cast<float>(height), centerY + offsetY))));
       foodItems.push_back(food);
     }
+  }
+}
+
+void World::clearTarget() {
+  hasTarget = false;
+  targetPosition = {0.0f, 0.0f};
+  target.setFillColor(sf::Color::Transparent);
+  for (auto &ant : ants) {
+    auto wanderBehavior = std::make_unique<WanderBehavior>();
+    ant.setBehavior(std::move(wanderBehavior));
   }
 }

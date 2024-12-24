@@ -2,7 +2,9 @@
 
 Home::Home() {
   shape.setSize(sf::Vector2f(50.f, 50.f));
-  shape.setFillColor(sf::Color(139, 69, 19)); // Brown color
+  shape.setFillColor(sf::Color::Black);
+  shape.setOutlineColor(sf::Color(139, 69, 21, 255));
+  shape.setOutlineThickness(2.0f);
 }
 
 void Home::draw(sf::RenderTarget &target, sf::RenderStates states) const {

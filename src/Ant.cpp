@@ -2,102 +2,98 @@
 #include <random>
 
 Ant::Ant(unsigned int windowWidth, unsigned int windowHeight)
-    : windowWidth(windowWidth), windowHeight(windowHeight) {
-  shape.setSize(sf::Vector2f(5.f, 5.f));
-  shape.setFillColor(sf::Color::Black);
+    : windowWidth(windowWidth), windowHeight(windowHeight),
+      directionLine(sf::Lines, 2) {
+  sf::Color antBrown(139, 69, 19, 255);
+  triangle.setPointCount(3);
+  triangle.setPoint(0, sf::Vector2f(0, -2 * ANT_SIZE));    // Top vertex
+  triangle.setPoint(1, sf::Vector2f(-ANT_SIZE, ANT_SIZE)); // Bottom-left vertex
+  triangle.setPoint(2, sf::Vector2f(ANT_SIZE, ANT_SIZE)); // Bottom-right vertex
+  triangle.setFillColor(antBrown);
 
-  // Initialize ant with a random direction
+  directionLine[0].color = sf::Color::Yellow;
+  directionLine[1].color = sf::Color::Yellow;
+
+  // Create random number generator
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_real_distribution<float> dis(-1.0f, 1.0f);
 
-  desiredDirection = sf::Vector2f(dis(gen), dis(gen));
+  // Generate random angle between 0 and 2π
+  std::uniform_real_distribution<float> angleDist(0, 2 * M_PI);
+  float randomAngle = angleDist(gen);
 
-  // normalize direction
-  desiredDirection = normalize(desiredDirection);
+  // Generate random speed between 0.5 and 1.0 of MAX_SPEED
+  std::uniform_real_distribution<float> speedDist(0.5f * MAX_SPEED, MAX_SPEED);
+  float randomSpeed = speedDist(gen);
 
-  // Initialize with random velocity
-  velocity.x = dis(gen);
-  velocity.y = dis(gen);
+  // Set initial velocity using angle and speed
+  velocity.x = std::cos(randomAngle) * randomSpeed;
+  velocity.y = std::sin(randomAngle) * randomSpeed;
 }
 
-void Ant::update(float deltaTime) { randomMove(deltaTime); }
+void Ant::setPosition(const sf::Vector2f &p) {
+  position = p;
+  triangle.setPosition(p);
 
-void Ant::setPosition(const sf::Vector2f &pos) {
-  position = sf::Vector2f(pos.x, pos.y);
-  shape.setPosition(pos);
+  directionLine[0].position = position;
 }
 
-sf::Vector2f Ant::getPosition() const {
-  return sf::Vector2f(position.x, position.y);
-}
+void Ant::setVelocity(const sf::Vector2f &v) { velocity = v; }
 
 void Ant::setFoundFood(bool found) { foundFood = found; }
-
 bool Ant::hasFoundFood() const { return foundFood; }
 
-void Ant::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-  target.draw(shape, states);
+void Ant::update(float deltaTime) {
+  if (movementBehavior) {
+    sf::Vector2f steeringAcceleration =
+        movementBehavior->calculateSteering(position, velocity, deltaTime);
+
+    // integrate acceleration to change the ants velocity accordingly
+    velocity += steeringAcceleration * deltaTime;
+
+    // Clamp ant's velocity to MAX_SPEED to ensure it doesn't go over
+    velocity = clampVector(velocity, MAX_SPEED);
+  }
+
+  // Update position and handle collisions
+  position += velocity * deltaTime;
+  handleBoundaryCollision();
+  updateVisuals();
 }
 
-void Ant::randomMove(float deltaTime) {
-  static std::random_device rd;
-  static std::mt19937 gen(rd());
-  static std::uniform_real_distribution<float> dis(-1.0f, 1.0f);
+void Ant::draw(sf::RenderTarget &target, sf::RenderStates states) const {
+  target.draw(triangle, states);
+  target.draw(directionLine, states);
+}
 
-  // add small random changes in x and y (randomDir) to the desiredDirection
-  // influenced by the wanderStrength
-  sf::Vector2f randomDir(dis(gen), dis(gen));
-  sf::Vector2f wanderInfluence(randomDir.x * wanderStrength,
-                               randomDir.y * wanderStrength);
-  desiredDirection += wanderInfluence;
-
-  // normalize the desired direction (keep it's direction while making its
-  // magnitude equal to 1) we do this because the desiredDirection will be used
-  // ONLY to change the direction of the ant's velocity vector and not its
-  // magnitude think of it light a compass needle, we only care which way it
-  // points (desiredDirection) and not how long the needle is (magnitude)
-  desiredDirection = normalize(desiredDirection);
-
-  sf::Vector2f desiredVelocity = (position - desiredDirection) * maxSpeed;
-
-  sf::Vector2f velocityAdjustment =
-      (desiredVelocity - velocity) * steerStrength;
-  sf::Vector2f acceleration = clampVector(velocityAdjustment, steerStrength);
-
-  velocity = clampVector(velocity + acceleration * deltaTime, maxSpeed);
-  position += velocity * deltaTime;
-
-  // Boundary checking with window dimensions
+void Ant::handleBoundaryCollision() {
   if (position.x > windowWidth || position.x < 0) {
     velocity.x *= -1;
-    position.x = std::max(0.0f, std::min((float)windowWidth, position.x));
-    desiredDirection.x *= -1; // Change desired direction too
+    position.x = std::clamp(position.x, 0.f, static_cast<float>(windowWidth));
   }
   if (position.y > windowHeight || position.y < 0) {
     velocity.y *= -1;
-    position.y = std::max(0.0f, std::min((float)windowHeight, position.y));
-    desiredDirection.y *= -1; // Change desired direction too
+    position.y = std::clamp(position.y, 0.f, static_cast<float>(windowHeight));
   }
-
-  shape.setPosition(position);
 }
 
-/*
-void Ant::moveHome(float deltaTime) {
-  Vector2D homeDirection(-position.x, -position.y);
-  homeDirection.normalize();
+void Ant::updateVisuals() {
+  triangle.setPosition(position);
 
-  Vector2D desiredVelocity = homeDirection * maxSpeed;
-  Vector2D desiredSteeringForce = desiredVelocity - velocity;
-  Vector2D acceleration = clampVector(desiredSteeringForce, steerStrength);
+  float currentVelocityMagnitude = magnitude(velocity);
+  if (currentVelocityMagnitude > 0) {
+    sf::Vector2f normalizedVelocityDirection =
+        velocity / currentVelocityMagnitude;
+    float angle = std::atan2(velocity.y, velocity.x);
 
-  velocity = clampVector(velocity + acceleration * deltaTime, maxSpeed);
-  position = Vector2D(position.x + velocity.x * deltaTime,
-                      position.y + velocity.y * deltaTime);
+    triangle.setRotation(angle * 180 / M_PI + 90);
+    directionLine[0].position = position;
+    directionLine[1].position =
+        position + normalizedVelocityDirection * DIRECTION_LINE_LENGTH;
+  }
 }
-*/
 
+// ----- UTILITY FUNCTIONS -----
 sf::Vector2f Ant::clampVector(const sf::Vector2f &v, float maxValue) {
   float magnitude = std::sqrt(v.x * v.x + v.y * v.y);
   if (magnitude > maxValue) {
@@ -106,14 +102,14 @@ sf::Vector2f Ant::clampVector(const sf::Vector2f &v, float maxValue) {
   return v;
 }
 
-float Ant::magnitude(sf::Vector2f v) {
-  return std::sqrt(v.x * v.x + v.y * v.y);
-}
-
 sf::Vector2f Ant::normalize(const sf::Vector2f &v) {
   float length = std::sqrt(v.x * v.x + v.y * v.y);
   if (length != 0) {
     return v / length;
   }
   return v; // Return unchanged if length is 0
+}
+
+float Ant::magnitude(sf::Vector2f v) {
+  return std::sqrt(v.x * v.x + v.y * v.y);
 }
