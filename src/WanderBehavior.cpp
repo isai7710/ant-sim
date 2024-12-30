@@ -1,5 +1,4 @@
 #include "WanderBehavior.h"
-#include <SFML/System/Vector2.hpp>
 #include <cmath>
 #include <ctime>
 

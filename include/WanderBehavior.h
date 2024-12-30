@@ -1,6 +1,5 @@
 #pragma once
 #include "IMovementBehavior.h"
-#include <SFML/System/Vector2.hpp>
 #include <random>
 
 class WanderBehavior : public IMovementBehavior {
