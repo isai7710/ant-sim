@@ -113,7 +113,7 @@ void World::setupWorld() {
   }
 
   // ----- GUI -----
-  if (!font.loadFromFile("../assets/font/Achemost.otf")) {
+  if (!font.loadFromFile("../assets/font/rainyhearts.ttf")) {
     throw std::runtime_error("Failed to load font");
   }
   addAntButton.setSize({100.f, 40.f});
