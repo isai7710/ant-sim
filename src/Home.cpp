@@ -1,16 +1,19 @@
 #include "Home.h"
 
 Home::Home() {
-  shape.setSize(sf::Vector2f(50.f, 50.f));
-  shape.setFillColor(sf::Color::Black);
-  shape.setOutlineColor(sf::Color(139, 69, 21, 255));
-  shape.setOutlineThickness(2.0f);
+  home.setSize(sf::Vector2f(HOME_SIZE, HOME_SIZE));
+  home.setFillColor(sf::Color::Black);
+  home.setOutlineColor(sf::Color(139, 69, 21, 255));
+  home.setOutlineThickness(2.0f);
 }
 
 void Home::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-  target.draw(shape, states);
+  target.draw(home, states);
 }
 
 void Home::setPosition(const sf::Vector2f &pos) {
-  shape.setPosition(pos - sf::Vector2f(25.f, 25.f)); // Center the home
+  home.setPosition(
+      pos - sf::Vector2f(HOME_SIZE / 2.f,
+                         HOME_SIZE /
+                             2.f)); // Center the rectangle on the pos argument
 }
