@@ -1,13 +1,12 @@
 #pragma once
 #include "IMovementBehavior.h"
 #include <SFML/Graphics.hpp>
-#include <SFML/Graphics/ConvexShape.hpp>
-#include <SFML/System/Vector2.hpp>
 #include <memory>
 
 class Ant : public sf::Drawable {
 public:
-  Ant(unsigned int windowWidth, unsigned int windowHeight);
+  Ant(unsigned int windowWidth, unsigned int windowHeight,
+      sf::Vector2f spawnPos);
 
   // Delete copy operations
   Ant(const Ant &) = delete;
@@ -15,10 +14,10 @@ public:
 
   // Enable move operations
   Ant(Ant &&) = default;
-  // Ant &operator=(Ant &&) = default;
+  Ant &operator=(Ant &&) = default;
 
   void setPosition(const sf::Vector2f &p);
-  void setVelocity(const sf::Vector2f &v);
+  void setVelocity(const sf::Vector2f &v) { velocity = v; };
   void setBehavior(std::unique_ptr<IMovementBehavior> newBehavior) {
     movementBehavior = std::move(newBehavior);
   }

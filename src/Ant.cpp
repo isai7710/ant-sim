@@ -1,9 +1,13 @@
 #include "Ant.h"
+#include "WanderBehavior.h"
 #include <random>
 
-Ant::Ant(unsigned int windowWidth, unsigned int windowHeight)
+Ant::Ant(unsigned int windowWidth, unsigned int windowHeight,
+         sf::Vector2f spawnPos)
     : windowWidth(windowWidth), windowHeight(windowHeight),
-      directionLine(sf::Lines, 2) {
+      directionLine(sf::Lines, 2),
+      movementBehavior(std::make_unique<WanderBehavior>()) {
+
   sf::Color antBrown(139, 69, 19, 255);
   triangle.setPointCount(3);
   triangle.setPoint(0, sf::Vector2f(0, -2 * ANT_SIZE));    // Top vertex
@@ -11,10 +15,12 @@ Ant::Ant(unsigned int windowWidth, unsigned int windowHeight)
   triangle.setPoint(2, sf::Vector2f(ANT_SIZE, ANT_SIZE)); // Bottom-right vertex
   triangle.setFillColor(antBrown);
 
+  setPosition(spawnPos);
+
   directionLine[0].color = sf::Color::Yellow;
   directionLine[1].color = sf::Color::Yellow;
 
-  // Create random number generator
+  // Create a random number generator
   std::random_device rd;
   std::mt19937 gen(rd());
 
@@ -22,11 +28,11 @@ Ant::Ant(unsigned int windowWidth, unsigned int windowHeight)
   std::uniform_real_distribution<float> angleDist(0, 2 * M_PI);
   float randomAngle = angleDist(gen);
 
-  // Generate random speed between 0.5 and 1.0 of MAX_SPEED
+  // Generate a random speed between 50-100% of MAX_SPEED
   std::uniform_real_distribution<float> speedDist(0.5f * MAX_SPEED, MAX_SPEED);
   float randomSpeed = speedDist(gen);
 
-  // Set initial velocity using angle and speed
+  // Set the initial velocity of the ant using the random angle and speed
   velocity.x = std::cos(randomAngle) * randomSpeed;
   velocity.y = std::sin(randomAngle) * randomSpeed;
 }
@@ -34,11 +40,8 @@ Ant::Ant(unsigned int windowWidth, unsigned int windowHeight)
 void Ant::setPosition(const sf::Vector2f &p) {
   position = p;
   triangle.setPosition(p);
-
   directionLine[0].position = position;
 }
-
-void Ant::setVelocity(const sf::Vector2f &v) { velocity = v; }
 
 void Ant::setFoundFood(bool found) { foundFood = found; }
 bool Ant::hasFoundFood() const { return foundFood; }
@@ -107,7 +110,7 @@ sf::Vector2f Ant::normalize(const sf::Vector2f &v) {
   if (length != 0) {
     return v / length;
   }
-  return v; // Return unchanged if length is 0
+  return v;
 }
 
 float Ant::magnitude(sf::Vector2f v) {
