@@ -1,17 +1,15 @@
 #include "World.h"
 #include "SeekBehavior.h"
 #include "WanderBehavior.h"
-#include <SFML/Graphics/Font.hpp>
-#include <SFML/System/Vector2.hpp>
 #include <cmath>
 #include <memory>
+#include <random>
 
 World::World(unsigned int width, unsigned int height)
-    : width(width), height(height) {
+    : width(width), height(height),
+      centerPoint(sf::Vector2f(width / 2.f, height / 2.f)) {
   ants.reserve(NUM_ANTS);
-  setupFood();
-  setupHome();
-  setupAnts();
+  setupWorld();
 }
 
 void World::update(float deltaTime) {
@@ -30,14 +28,29 @@ void World::update(float deltaTime) {
 
 void World::draw(sf::RenderWindow &window) {
   window.draw(home);
-  for (const auto &food : foodItems) {
-    window.draw(food);
-  }
   for (const auto &ant : ants) {
     window.draw(ant);
   }
+  for (const auto &food : foodItems) {
+    window.draw(food);
+  }
   if (hasTarget) {
     window.draw(target);
+  }
+  window.draw(addAntButton);
+  window.draw(addAntButtonText);
+}
+
+void World::handleEvents(const sf::Event &event) {
+  if (event.type == sf::Event::MouseButtonPressed &&
+      event.mouseButton.button == sf::Mouse::Left) {
+    sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+    if (addAntButton.getGlobalBounds().contains(mousePos)) {
+      addAnt();
+    } else {
+      updateTarget(
+          {static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)});
+    }
   }
 }
 
@@ -60,21 +73,16 @@ void World::updateTarget(sf::Vector2f position) {
 
 sf::Vector2f World::getTargetPosition() { return targetPosition; }
 
-void World::setupAnts() {
+void World::setupWorld() {
+  // ----- HOME -----
+  home.setPosition(centerPoint);
+
+  // ----- ANTS -----
   for (std::size_t i = 0; i < NUM_ANTS; i++) {
-    Ant ant(width, height);
-    ant.setPosition(sf::Vector2f(width / 2.f, height / 2.f));
-    auto wanderBehavior = std::make_unique<WanderBehavior>();
-    ant.setBehavior(std::move(wanderBehavior));
-    ants.push_back(std::move(ant));
+    ants.emplace_back(width, height, centerPoint);
   }
-}
 
-void World::setupHome() {
-  home.setPosition(sf::Vector2f(width / 2.f, height / 2.f));
-}
-
-void World::setupFood() {
+  // ----- FOOD -----
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_real_distribution<float> disX(0.f, static_cast<float>(width));
@@ -103,7 +111,24 @@ void World::setupFood() {
       foodItems.push_back(food);
     }
   }
+
+  // ----- GUI -----
+  if (!font.loadFromFile("../assets/font/Achemost.otf")) {
+    throw std::runtime_error("Failed to load font");
+  }
+  addAntButton.setSize({100.f, 40.f});
+  addAntButton.setPosition({10.f, 10.f});
+  addAntButton.setFillColor(sf::Color(20, 82, 36));
+
+  addAntButtonText.setFont(font);
+  addAntButtonText.setString("Add Ant");
+  addAntButtonText.setCharacterSize(20);
+  addAntButtonText.setFillColor(sf::Color::White);
+  addAntButtonText.setPosition(addAntButton.getPosition() +
+                               sf::Vector2f(10.0f, 5.0f));
 }
+
+void World::addAnt() { ants.emplace_back(width, height, centerPoint); }
 
 void World::clearTarget() {
   hasTarget = false;

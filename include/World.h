@@ -3,6 +3,7 @@
 #include "Food.h"
 #include "Home.h"
 #include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 #include <vector>
 
 class World {
@@ -10,24 +11,28 @@ public:
   explicit World(unsigned int width, unsigned int height);
   void update(float deltaTime);
   void draw(sf::RenderWindow &window);
+  void handleEvents(const sf::Event &event);
   void updateTarget(sf::Vector2f position);
   sf::Vector2f getTargetPosition();
 
 private:
-  void setupAnts(); // set up Ants vector with number of ants
-  void setupHome(); // set up Home object's position in window
-  void setupFood(); // set up food clumps and food crumbs per clump
+  void setupWorld();
+  void addAnt();
+  void clearTarget();
 
+  Home home;
   std::vector<Ant> ants;
   std::vector<Food> foodItems;
-  Home home;
+
+  sf::RectangleShape addAntButton;
+  sf::Text addAntButtonText;
+  sf::Font font;
 
   sf::CircleShape target{5.0f};
   sf::Vector2f targetPosition;
   bool hasTarget = false;
 
-  void clearTarget();
-
+  sf::Vector2f centerPoint;
   const unsigned int width;
   const unsigned int height;
   static constexpr std::size_t NUM_ANTS = 3;
