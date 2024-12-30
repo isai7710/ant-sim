@@ -28,6 +28,7 @@ set(HEADERS
     include/IMovementBehavior.h
     include/SeekBehavior.h
     include/WanderBehavior.h
+    include/Vector2Utils.h
 )
 
 # Add executable
