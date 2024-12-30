@@ -18,11 +18,7 @@ int main() {
       if (event.type == sf::Event::Closed)
         window.close();
       // Check for mouse click
-      if (event.type == sf::Event::MouseButtonPressed &&
-          event.mouseButton.button == sf::Mouse::Left) {
-        world.updateTarget({static_cast<float>(event.mouseButton.x),
-                            static_cast<float>(event.mouseButton.y)});
-      }
+      world.handleEvents(event);
     }
 
     float deltaTime = clock.restart().asSeconds();
