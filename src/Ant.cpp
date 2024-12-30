@@ -1,4 +1,5 @@
 #include "Ant.h"
+#include "Vector2Utils.h"
 #include "WanderBehavior.h"
 #include <random>
 
@@ -55,7 +56,7 @@ void Ant::update(float deltaTime) {
     velocity += steeringAcceleration * deltaTime;
 
     // Clamp ant's velocity to MAX_SPEED to ensure it doesn't go over
-    velocity = clampVector(velocity, MAX_SPEED);
+    velocity = Vector2Utils::clamp(velocity, MAX_SPEED);
   }
 
   // Update position and handle collisions
@@ -83,7 +84,7 @@ void Ant::handleBoundaryCollision() {
 void Ant::updateVisuals() {
   triangle.setPosition(position);
 
-  float currentVelocityMagnitude = magnitude(velocity);
+  float currentVelocityMagnitude = Vector2Utils::magnitude(velocity);
   if (currentVelocityMagnitude > 0) {
     sf::Vector2f normalizedVelocityDirection =
         velocity / currentVelocityMagnitude;
@@ -94,25 +95,4 @@ void Ant::updateVisuals() {
     directionLine[1].position =
         position + normalizedVelocityDirection * DIRECTION_LINE_LENGTH;
   }
-}
-
-// ----- UTILITY FUNCTIONS -----
-sf::Vector2f Ant::clampVector(const sf::Vector2f &v, float maxValue) {
-  float magnitude = std::sqrt(v.x * v.x + v.y * v.y);
-  if (magnitude > maxValue) {
-    return v * (maxValue / magnitude);
-  }
-  return v;
-}
-
-sf::Vector2f Ant::normalize(const sf::Vector2f &v) {
-  float length = std::sqrt(v.x * v.x + v.y * v.y);
-  if (length != 0) {
-    return v / length;
-  }
-  return v;
-}
-
-float Ant::magnitude(sf::Vector2f v) {
-  return std::sqrt(v.x * v.x + v.y * v.y);
 }

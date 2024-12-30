@@ -53,8 +53,4 @@ private:
   static constexpr float ANT_SIZE = 6.f;
   static constexpr float MAX_SPEED = 50.f;
   static constexpr float DIRECTION_LINE_LENGTH = 20.f;
-
-  sf::Vector2f clampVector(const sf::Vector2f &v, float maxValue);
-  sf::Vector2f normalize(const sf::Vector2f &v);
-  float magnitude(sf::Vector2f);
 };

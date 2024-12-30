@@ -1,5 +1,6 @@
 #include "World.h"
 #include "SeekBehavior.h"
+#include "Vector2Utils.h"
 #include "WanderBehavior.h"
 #include <cmath>
 #include <memory>
@@ -18,8 +19,8 @@ void World::update(float deltaTime) {
   }
   if (hasTarget) {
     for (auto &ant : ants) {
-      sf::Vector2f error = targetPosition - ant.getPosition();
-      if (std::sqrt(error.x * error.x + error.y * error.y) < 2.0f) {
+      if (Vector2Utils::squaredDistance(targetPosition, ant.getPosition()) <
+          TARGET_REACH_DISTANCE_SQUARED) {
         clearTarget();
       }
     }
@@ -87,7 +88,7 @@ void World::setupWorld() {
   std::mt19937 gen(rd());
   std::uniform_real_distribution<float> disX(0.f, static_cast<float>(width));
   std::uniform_real_distribution<float> disY(0.f, static_cast<float>(height));
-  std::uniform_real_distribution<float> disOffset(-20.f, 20.f);
+  std::uniform_real_distribution<float> disOffset(-FOOD_DIST, FOOD_DIST);
 
   for (std::size_t i = 0; i < NUM_FOOD_CLUMPS; i++) {
     float centerX = disX(gen);

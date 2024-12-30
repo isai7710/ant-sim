@@ -31,6 +31,9 @@ private:
   sf::CircleShape target{5.0f};
   sf::Vector2f targetPosition;
   bool hasTarget = false;
+  static constexpr float TARGET_REACH_DISTANCE = 2.0f;
+  static constexpr float TARGET_REACH_DISTANCE_SQUARED =
+      TARGET_REACH_DISTANCE * TARGET_REACH_DISTANCE;
 
   sf::Vector2f centerPoint;
   const unsigned int width;
@@ -38,4 +41,5 @@ private:
   static constexpr std::size_t NUM_ANTS = 3;
   static constexpr std::size_t NUM_FOOD_CLUMPS = 3;
   static constexpr std::size_t NUM_FOOD_CRUMBS_PER_CLUMP = 30;
+  static constexpr float FOOD_DIST = 20.f;
 };
