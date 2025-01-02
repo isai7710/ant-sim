@@ -2,6 +2,7 @@
 #include "Ant.h"
 #include "Food.h"
 #include "Home.h"
+#include "Pheromone.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <vector>
@@ -14,6 +15,7 @@ public:
   void handleEvents(const sf::Event &event);
   void updateTarget(sf::Vector2f position);
   sf::Vector2f getTargetPosition();
+  void addPheromone(const Pheromone &pheromone);
 
 private:
   void setupWorld();
@@ -23,6 +25,7 @@ private:
   Home home;
   std::vector<Ant> ants;
   std::vector<Food> foodItems;
+  std::vector<Pheromone> pheromones;
 
   sf::RectangleShape addAntButton;
   sf::Text addAntButtonText;

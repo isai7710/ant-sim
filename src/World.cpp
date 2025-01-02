@@ -15,7 +15,15 @@ World::World(unsigned int width, unsigned int height)
 
 void World::update(float deltaTime) {
   for (auto &ant : ants) {
-    ant.update(deltaTime);
+    ant.update(*this, deltaTime);
+  }
+  for (auto it = pheromones.begin(); it != pheromones.end();) {
+    it->update(deltaTime);
+    if (it->strength <= it->MIN_STRENGTH) {
+      it = pheromones.erase(it);
+    } else {
+      ++it;
+    }
   }
   if (hasTarget) {
     for (auto &ant : ants) {
@@ -34,6 +42,9 @@ void World::draw(sf::RenderWindow &window) {
   }
   for (const auto &food : foodItems) {
     window.draw(food);
+  }
+  for (const auto &pheromone : pheromones) {
+    window.draw(pheromone);
   }
   if (hasTarget) {
     window.draw(target);
@@ -117,7 +128,7 @@ void World::setupWorld() {
   if (!font.loadFromFile("../assets/font/rainyhearts.ttf")) {
     throw std::runtime_error("Failed to load font");
   }
-  addAntButton.setSize({100.f, 40.f});
+  addAntButton.setSize({80.f, 40.f});
   addAntButton.setPosition({10.f, 10.f});
   addAntButton.setFillColor(sf::Color(20, 82, 36));
 
@@ -130,6 +141,9 @@ void World::setupWorld() {
 }
 
 void World::addAnt() { ants.emplace_back(width, height, centerPoint); }
+void World::addPheromone(const Pheromone &pheromone) {
+  pheromones.push_back(pheromone);
+}
 
 void World::clearTarget() {
   hasTarget = false;
