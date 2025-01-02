@@ -25,6 +25,7 @@ set(HEADERS
     include/Food.h
     include/Home.h
     include/World.h
+    include/Pheromone.h
     include/IMovementBehavior.h
     include/SeekBehavior.h
     include/WanderBehavior.h
