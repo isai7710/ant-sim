@@ -47,7 +47,6 @@ struct Pheromone : public sf::Drawable {
   }
 
 private:
-  // Override sf::Drawable's draw method
   virtual void draw(sf::RenderTarget &target,
                     sf::RenderStates states) const override {
     target.draw(pheromone, states);
