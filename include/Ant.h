@@ -3,6 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
+class World;
+
 class Ant : public sf::Drawable {
 public:
   Ant(unsigned int windowWidth, unsigned int windowHeight,
@@ -23,7 +25,8 @@ public:
   }
   sf::Vector2f getPosition() const { return position; };
   sf::Vector2f getVelocity() const { return velocity; };
-  void update(float deltaTime);
+  void update(World &world, float deltaTime);
+  void depositPheromone(World &world);
   void setFoundFood(bool found);
   bool hasFoundFood() const;
 
@@ -39,6 +42,7 @@ private:
   sf::Vector2f position;
   sf::Vector2f velocity;
   sf::Vector2f desiredDirection;
+  sf::Clock clock;
 
   unsigned int windowWidth;
   unsigned int windowHeight;
@@ -53,4 +57,5 @@ private:
   static constexpr float ANT_SIZE = 6.f;
   static constexpr float MAX_SPEED = 50.f;
   static constexpr float DIRECTION_LINE_LENGTH = 20.f;
+  static constexpr float DEPOSIT_INTERVAL = 2.f;
 };

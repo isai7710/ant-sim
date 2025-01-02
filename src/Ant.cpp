@@ -1,6 +1,8 @@
 #include "Ant.h"
+#include "Pheromone.h"
 #include "Vector2Utils.h"
 #include "WanderBehavior.h"
+#include "World.h"
 #include <random>
 
 Ant::Ant(unsigned int windowWidth, unsigned int windowHeight,
@@ -47,7 +49,7 @@ void Ant::setPosition(const sf::Vector2f &p) {
 void Ant::setFoundFood(bool found) { foundFood = found; }
 bool Ant::hasFoundFood() const { return foundFood; }
 
-void Ant::update(float deltaTime) {
+void Ant::update(World &world, float deltaTime) {
   if (movementBehavior) {
     sf::Vector2f steeringAcceleration =
         movementBehavior->calculateSteering(position, velocity, deltaTime);
@@ -63,6 +65,13 @@ void Ant::update(float deltaTime) {
   position += velocity * deltaTime;
   handleBoundaryCollision();
   updateVisuals();
+  depositPheromone(world);
+}
+
+void Ant::depositPheromone(World &world) {
+  if (clock.getElapsedTime().asSeconds() > DEPOSIT_INTERVAL) {
+    world.addPheromone({position, PheromoneType::Home});
+  }
 }
 
 void Ant::draw(sf::RenderTarget &target, sf::RenderStates states) const {
