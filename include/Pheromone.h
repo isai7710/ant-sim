@@ -20,7 +20,6 @@ struct Pheromone : public sf::Drawable {
 
   static constexpr float DECAY_RATE = 0.08f;
   static constexpr float MIN_STRENGTH = 0.02f;
-  static constexpr float PHEROMONE_SIZE = 2.f;
 
   Pheromone(sf::Vector2f p, PheromoneType t, float s = 1.0f)
       : position(p), type(t), strength(s) {
