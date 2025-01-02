@@ -17,12 +17,12 @@ void World::update(float deltaTime) {
   for (auto &ant : ants) {
     ant.update(*this, deltaTime);
   }
-  for (auto it = pheromones.begin(); it != pheromones.end();) {
-    it->update(deltaTime);
-    if (it->strength <= it->MIN_STRENGTH) {
-      it = pheromones.erase(it);
+  for (auto p = pheromones.begin(); p != pheromones.end();) {
+    p->update(deltaTime);
+    if (p->strength <= p->MIN_STRENGTH) {
+      p = pheromones.erase(p);
     } else {
-      ++it;
+      ++p;
     }
   }
   if (hasTarget) {
