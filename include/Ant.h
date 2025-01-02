@@ -18,17 +18,22 @@ public:
   Ant(Ant &&) = default;
   Ant &operator=(Ant &&) = default;
 
-  void setPosition(const sf::Vector2f &p);
+  void setPosition(const sf::Vector2f &p) {
+    position = p;
+    triangle.setPosition(p);
+  };
   void setVelocity(const sf::Vector2f &v) { velocity = v; };
   void setBehavior(std::unique_ptr<IMovementBehavior> newBehavior) {
     movementBehavior = std::move(newBehavior);
   }
+  void setFoundFood(bool found) { foundFood = found; }
+
   sf::Vector2f getPosition() const { return position; };
   sf::Vector2f getVelocity() const { return velocity; };
+  bool getFoundFood() const { return foundFood; };
+
   void update(World &world, float deltaTime);
   void depositPheromone(World &world);
-  void setFoundFood(bool found);
-  bool hasFoundFood() const;
 
 private:
   virtual void draw(sf::RenderTarget &target,
@@ -37,7 +42,6 @@ private:
   // void moveHome(float deltaTime);
 
   sf::ConvexShape triangle;
-  sf::VertexArray directionLine;
 
   sf::Vector2f position;
   sf::Vector2f velocity;
@@ -49,7 +53,6 @@ private:
 
   bool foundFood{false};
 
-  void updateVisuals();
   void handleBoundaryCollision();
 
   std::unique_ptr<IMovementBehavior> movementBehavior;
@@ -57,5 +60,5 @@ private:
   static constexpr float ANT_SIZE = 6.f;
   static constexpr float MAX_SPEED = 50.f;
   static constexpr float DIRECTION_LINE_LENGTH = 20.f;
-  static constexpr float DEPOSIT_INTERVAL = 2.f;
+  static constexpr float DEPOSIT_INTERVAL = 0.1f;
 };

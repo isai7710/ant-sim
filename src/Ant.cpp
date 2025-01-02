@@ -1,5 +1,6 @@
 #include "Ant.h"
 #include "Pheromone.h"
+#include "SeekBehavior.h"
 #include "Vector2Utils.h"
 #include "WanderBehavior.h"
 #include "World.h"
@@ -8,7 +9,6 @@
 Ant::Ant(unsigned int windowWidth, unsigned int windowHeight,
          sf::Vector2f spawnPos)
     : windowWidth(windowWidth), windowHeight(windowHeight),
-      directionLine(sf::Lines, 2),
       movementBehavior(std::make_unique<WanderBehavior>()) {
 
   sf::Color antBrown(139, 69, 19, 255);
@@ -19,9 +19,6 @@ Ant::Ant(unsigned int windowWidth, unsigned int windowHeight,
   triangle.setFillColor(antBrown);
 
   setPosition(spawnPos);
-
-  directionLine[0].color = sf::Color::Yellow;
-  directionLine[1].color = sf::Color::Yellow;
 
   // Create a random number generator
   std::random_device rd;
@@ -40,15 +37,6 @@ Ant::Ant(unsigned int windowWidth, unsigned int windowHeight,
   velocity.y = std::sin(randomAngle) * randomSpeed;
 }
 
-void Ant::setPosition(const sf::Vector2f &p) {
-  position = p;
-  triangle.setPosition(p);
-  directionLine[0].position = position;
-}
-
-void Ant::setFoundFood(bool found) { foundFood = found; }
-bool Ant::hasFoundFood() const { return foundFood; }
-
 void Ant::update(World &world, float deltaTime) {
   if (movementBehavior) {
     sf::Vector2f steeringAcceleration =
@@ -61,22 +49,32 @@ void Ant::update(World &world, float deltaTime) {
     velocity = Vector2Utils::clamp(velocity, MAX_SPEED);
   }
 
-  // Update position and handle collisions
+  // Update position member and handle collisions
   position += velocity * deltaTime;
   handleBoundaryCollision();
-  updateVisuals();
+
+  // Update shape position and orientation
+  triangle.setPosition(position);
+  float angle = std::atan2(velocity.y, velocity.x);
+  triangle.setRotation(angle * 180 / M_PI + 90);
+
+  // deposit pheromone in this new position
   depositPheromone(world);
 }
 
 void Ant::depositPheromone(World &world) {
   if (clock.getElapsedTime().asSeconds() > DEPOSIT_INTERVAL) {
-    world.addPheromone({position, PheromoneType::Home});
+    if (dynamic_cast<WanderBehavior *>(movementBehavior.get())) {
+      world.addPheromone(Pheromone(position, PheromoneType::Home));
+    } else if (dynamic_cast<SeekBehavior *>(movementBehavior.get())) {
+      world.addPheromone(Pheromone(position, PheromoneType::Food));
+    }
+    clock.restart();
   }
 }
 
 void Ant::draw(sf::RenderTarget &target, sf::RenderStates states) const {
   target.draw(triangle, states);
-  target.draw(directionLine, states);
 }
 
 void Ant::handleBoundaryCollision() {
@@ -87,21 +85,5 @@ void Ant::handleBoundaryCollision() {
   if (position.y > windowHeight || position.y < 0) {
     velocity.y *= -1;
     position.y = std::clamp(position.y, 0.f, static_cast<float>(windowHeight));
-  }
-}
-
-void Ant::updateVisuals() {
-  triangle.setPosition(position);
-
-  float currentVelocityMagnitude = Vector2Utils::magnitude(velocity);
-  if (currentVelocityMagnitude > 0) {
-    sf::Vector2f normalizedVelocityDirection =
-        velocity / currentVelocityMagnitude;
-    float angle = std::atan2(velocity.y, velocity.x);
-
-    triangle.setRotation(angle * 180 / M_PI + 90);
-    directionLine[0].position = position;
-    directionLine[1].position =
-        position + normalizedVelocityDirection * DIRECTION_LINE_LENGTH;
   }
 }
