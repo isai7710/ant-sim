@@ -14,17 +14,16 @@ enum class PheromoneType {
 
 struct Pheromone : public sf::Drawable {
   sf::Vector2f position;
-  sf::CircleShape pheromone;
+  sf::CircleShape pheromone{2.0f};
   PheromoneType type;
   float strength;
 
-  static constexpr float DECAY_RATE = 0.5f;
+  static constexpr float DECAY_RATE = 0.08f;
   static constexpr float MIN_STRENGTH = 0.02f;
   static constexpr float PHEROMONE_SIZE = 2.f;
 
   Pheromone(sf::Vector2f p, PheromoneType t, float s = 1.0f)
       : position(p), type(t), strength(s) {
-    pheromone.setRadius(PHEROMONE_SIZE);
     pheromone.setPosition(position);
     if (type == PheromoneType::Home) {
       pheromone.setFillColor(sf::Color(0, 0, 255, 255));
