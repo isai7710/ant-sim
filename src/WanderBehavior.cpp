@@ -36,8 +36,11 @@ sf::Vector2f WanderBehavior::calculateSteering(const sf::Vector2f &currentPos,
   // steering algorithm is then just:
   sf::Vector2f steeringAcceleration = antToWanderCircleCenter + wanderTarget;
 
-  // 5. Return the scaled steeringAcceleration
-  return normalize(steeringAcceleration) * MAX_ACCELERATION;
+  // 5. Return the steeringAcceleration
+  // we could also scale the vector to a max acceleration constant
+  // return normalize(steeringAcceleration) * MAX_ACCELERATION or clamp it as
+  // well with return clamp(steeringAcceleration)
+  return steeringAcceleration;
 }
 
 sf::Vector2f WanderBehavior::getRandomUnitVector() {
