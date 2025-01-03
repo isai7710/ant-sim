@@ -3,14 +3,25 @@
 #include <ctime>
 
 WanderBehavior::WanderBehavior() : rng(std::time(nullptr)) {
-  wanderTarget = sf::Vector2f(wanderRadius, 0);
+  // Create a random number generator
+  std::random_device rd;
+  std::mt19937 gen(rd());
+
+  // Generate random angle between 0 and 2pi
+  std::uniform_real_distribution<float> angleDist(0, 2 * M_PI);
+  float randomAngle = angleDist(gen);
+
+  // Give wanderTarget vector a magnitude of wander circle's radius with random
+  // direction
+  wanderTarget.x = std::cos(randomAngle) * wanderRadius;
+  wanderTarget.y = std::sin(randomAngle) * wanderRadius;
 }
 
 sf::Vector2f WanderBehavior::calculateSteering(const sf::Vector2f &currentPos,
                                                const sf::Vector2f &currentVel,
                                                float deltaTime) {
-  // 1. Add a small random random unit vector times wanderJitter to the target's
-  // position
+  // 1. Add a small random random unit vector times wanderJitter to the wander
+  // target's position
   wanderTarget += getRandomUnitVector() * wanderJitter;
 
   // 2. Reproject this new target onto the wander circle
