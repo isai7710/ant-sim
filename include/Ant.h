@@ -38,14 +38,11 @@ public:
 private:
   virtual void draw(sf::RenderTarget &target,
                     sf::RenderStates states) const override;
-  void randomMove(float deltaTime);
-  // void moveHome(float deltaTime);
 
   sf::ConvexShape triangle;
 
   sf::Vector2f position;
   sf::Vector2f velocity;
-  sf::Vector2f desiredDirection;
   sf::Clock clock;
 
   unsigned int windowWidth;
