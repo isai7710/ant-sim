@@ -25,7 +25,7 @@ int main() {
 
     world.update(deltaTime);
 
-    window.clear(sf::Color::Black);
+    window.clear(sf::Color::White);
     world.draw(window);
     window.display();
   }
