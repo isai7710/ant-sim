@@ -30,11 +30,11 @@ sf::Vector2f WanderBehavior::calculateSteering(const sf::Vector2f &currentPos,
   // 3. Calculate ant's current and normalized direction vector and multiply by
   // wanderDistance to get the vector to the center of the wander circle
   sf::Vector2f currentDirection = normalize(currentVel);
-  sf::Vector2f antToWanderCircleCenter = currentDirection * wanderDistance;
+  sf::Vector2f antToWanderCircle = currentDirection * wanderDistance;
 
   // 4. Steering acceleration (force) according to Craig Reynold's wander
   // steering algorithm is then just:
-  sf::Vector2f steeringAcceleration = antToWanderCircleCenter + wanderTarget;
+  sf::Vector2f steeringAcceleration = antToWanderCircle + wanderTarget;
 
   // 5. Return the steeringAcceleration
   // we could also scale the vector to a max acceleration constant
