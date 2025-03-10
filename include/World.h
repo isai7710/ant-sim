@@ -3,6 +3,7 @@
 #include "Food.h"
 #include "Home.h"
 #include "Pheromone.h"
+#include "UI.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <vector>
@@ -26,8 +27,7 @@ private:
   std::vector<Food> foodItems;
   std::vector<Pheromone> pheromones;
 
-  sf::RectangleShape addAntButton;
-  sf::Text addAntButtonText;
+  UIButton addAntButton;
   sf::Font font;
 
   sf::CircleShape target{5.0f};

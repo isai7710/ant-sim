@@ -1,5 +1,6 @@
 #include "World.h"
 #include "SeekBehavior.h"
+#include "UI.h"
 #include "Vector2Utils.h"
 #include "WanderBehavior.h"
 #include <cmath>
@@ -8,7 +9,9 @@
 
 World::World(unsigned int width, unsigned int height)
     : width(width), height(height),
-      centerPoint(sf::Vector2f(width / 2.f, height / 2.f)) {
+      centerPoint(sf::Vector2f(width / 2.f, height / 2.f)),
+      addAntButton(sf::Vector2f(10.f, 10.f), 80.f, 40.f, "Add Ant",
+                   "../assets/font/rainyhearts.ttf") {
   ants.reserve(NUM_ANTS);
   setupWorld();
 }
@@ -50,14 +53,13 @@ void World::draw(sf::RenderWindow &window) {
     window.draw(target);
   }
   window.draw(addAntButton);
-  window.draw(addAntButtonText);
 }
 
 void World::handleEvents(const sf::Event &event) {
   if (event.type == sf::Event::MouseButtonPressed &&
       event.mouseButton.button == sf::Mouse::Left) {
     sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
-    if (addAntButton.getGlobalBounds().contains(mousePos)) {
+    if (addAntButton.contains(mousePos)) {
       addAnt();
     } else {
       updateTarget(
@@ -122,21 +124,6 @@ void World::setupWorld() {
       foodItems.push_back(food);
     }
   }
-
-  // ----- GUI -----
-  if (!font.loadFromFile("../assets/font/rainyhearts.ttf")) {
-    throw std::runtime_error("Failed to load font");
-  }
-  addAntButton.setSize({80.f, 40.f});
-  addAntButton.setPosition({10.f, 10.f});
-  addAntButton.setFillColor(sf::Color(20, 82, 36));
-
-  addAntButtonText.setFont(font);
-  addAntButtonText.setString("Add Ant");
-  addAntButtonText.setCharacterSize(20);
-  addAntButtonText.setFillColor(sf::Color::White);
-  addAntButtonText.setPosition(addAntButton.getPosition() +
-                               sf::Vector2f(10.0f, 5.0f));
 }
 
 void World::addAnt() { ants.emplace_back(width, height, centerPoint); }
