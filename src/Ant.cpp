@@ -1,6 +1,5 @@
 #include "Ant.h"
 #include "Pheromone.h"
-#include "SeekBehavior.h"
 #include "Vector2Utils.h"
 #include "WanderBehavior.h"
 #include "World.h"
