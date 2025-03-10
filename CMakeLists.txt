@@ -30,6 +30,7 @@ set(HEADERS
     include/SeekBehavior.h
     include/WanderBehavior.h
     include/Vector2Utils.h
+    include/UI.h
 )
 
 # Add executable
