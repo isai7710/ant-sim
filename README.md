@@ -14,6 +14,10 @@ The `main.cpp` file acts as the entry point, where an SFML window object is crea
 
 This allows the World class to serve as the glue between user inputs, simulation logic, and visual representation. Some key methods to note include:
 
+### `setupWorld()`
+
+Initializes all simulation components upon creation of the `World` class. It is called in the constructor.
+
 ### `update(float deltaTime)`
 
 Advances the simulation by the specified time step (but does not yet draw it on the window). This update includes:
@@ -30,6 +34,11 @@ Uses the reference to the main window passed as an argument to draw all entities
 
 Processes user input events that are accessed or identified in the main game loop, particularly mouse clicks. Here we either
 
-1. Add a new ant when the add button is clicked, 1. first
-2. second
-3. third
+1. Add a new ant when the add button is clicked, or
+2. Updates target location for ants to seek with the `updateTarget(sf::Vector2f position)` method. This method first clears the target if its position matches the current target, and then sets a new target position for the ants while changing their behavior to seek that target.
+
+### Key members of the World class:
+
+- `std::vector<Ant> ants`: stores the ants currently in the simulation
+- `std::vector<Food> foodItems`: stores all the food crumbs in the simulation
+- `std::vector<Pheromone> pheromones`: stores all the pheromones currently dropped by ants in the simulation
