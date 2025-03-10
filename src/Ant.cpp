@@ -64,11 +64,8 @@ void Ant::update(World &world, float deltaTime) {
 
 void Ant::depositPheromone(World &world) {
   if (clock.getElapsedTime().asSeconds() > DEPOSIT_INTERVAL) {
-    if (dynamic_cast<WanderBehavior *>(movementBehavior.get())) {
-      world.addPheromone(Pheromone(position, PheromoneType::Home));
-    } else if (dynamic_cast<SeekBehavior *>(movementBehavior.get())) {
-      world.addPheromone(Pheromone(position, PheromoneType::Food));
-    }
+    PheromoneType type = movementBehavior->getPheromoneType();
+    world.addPheromone(Pheromone(position, type));
     clock.restart();
   }
 }
