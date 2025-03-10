@@ -70,13 +70,14 @@ void World::updateTarget(sf::Vector2f position) {
   if (targetPosition == position) {
     clearTarget();
     return;
-  } else {
-    targetPosition = position;
-    target.setPosition(targetPosition.x - target.getRadius(),
-                       targetPosition.y - target.getRadius());
-    target.setFillColor(sf::Color::Green);
-    hasTarget = true;
   }
+
+  targetPosition = position;
+  target.setPosition(targetPosition.x - target.getRadius(),
+                     targetPosition.y - target.getRadius());
+  target.setFillColor(sf::Color::Green);
+  hasTarget = true;
+
   for (auto &ant : ants) {
     auto seekBehavior = std::make_unique<SeekBehavior>(targetPosition);
     ant.setBehavior(std::move(seekBehavior));
