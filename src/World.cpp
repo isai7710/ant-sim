@@ -84,8 +84,6 @@ void World::updateTarget(sf::Vector2f position) {
   }
 }
 
-sf::Vector2f World::getTargetPosition() { return targetPosition; }
-
 void World::setupWorld() {
   // ----- HOME -----
   home.setPosition(centerPoint);

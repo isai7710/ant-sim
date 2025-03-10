@@ -14,7 +14,6 @@ public:
   void draw(sf::RenderWindow &window);
   void handleEvents(const sf::Event &event);
   void updateTarget(sf::Vector2f position);
-  sf::Vector2f getTargetPosition();
   void addPheromone(const Pheromone &pheromone);
 
 private:
