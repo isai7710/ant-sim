@@ -1,5 +1,6 @@
 #pragma once
 #include "IMovementBehavior.h"
+#include "Pheromone.h"
 #include <SFML/System/Vector2.hpp>
 
 class SeekBehavior : public IMovementBehavior {
@@ -10,6 +11,9 @@ public:
   sf::Vector2f calculateSteering(const sf::Vector2f &currentPos,
                                  const sf::Vector2f &currentVel,
                                  float deltaTime) override;
+  PheromoneType getPheromoneType() const override {
+    return PheromoneType::Food;
+  }
 
 private:
   sf::Vector2f targetPosition;

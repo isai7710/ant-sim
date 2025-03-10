@@ -1,5 +1,6 @@
 #pragma once
 #include "IMovementBehavior.h"
+#include "Pheromone.h"
 #include <random>
 
 class WanderBehavior : public IMovementBehavior {
@@ -13,6 +14,9 @@ public:
   void setWanderRadius(float radius) { wanderRadius = radius; };
   void setWanderDistance(float distance) { wanderDistance = distance; }
   void setWanderJitter(float jitter) { wanderJitter = jitter; };
+  PheromoneType getPheromoneType() const override {
+    return PheromoneType::Home;
+  }
 
 private:
   sf::Vector2f wanderTarget; // Point on the wander circle
