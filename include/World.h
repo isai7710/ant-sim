@@ -5,6 +5,7 @@
 #include "Pheromone.h"
 #include "UI.h"
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/PrimitiveType.hpp>
 #include <SFML/System.hpp>
 #include <vector>
 
@@ -22,12 +23,18 @@ private:
   void addAnt();
   void clearTarget();
 
+  static constexpr float RADIUS = 10.f;
+  static constexpr float THICKNESS = 5.f;
+  static constexpr std::size_t QUALITY = 64;
+
+  sf::VertexArray bounds{sf::TriangleStrip, 2 * QUALITY + 2};
+
   Home home;
   std::vector<Ant> ants;
   std::vector<Food> foodItems;
   std::vector<Pheromone> pheromones;
 
-  UIButton addAntButton;
+  RoundedButton addAntButton;
   sf::Font font;
 
   sf::CircleShape target{5.0f};
