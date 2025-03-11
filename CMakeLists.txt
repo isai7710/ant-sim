@@ -17,6 +17,7 @@ set(SOURCES
     src/World.cpp
     src/SeekBehavior.cpp
     src/WanderBehavior.cpp
+    src/UI.cpp
 )
 
 # Header files
