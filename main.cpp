@@ -2,14 +2,16 @@
 #include <SFML/Graphics.hpp>
 
 int main() {
-  const unsigned int WINDOW_WIDTH = 500;
+  const unsigned int WINDOW_WIDTH = 600;
   const unsigned int WINDOW_HEIGHT = 500;
+  const unsigned int WORLD_WIDTH = 500;
+  const unsigned int WORLD_HEIGHT = 500;
 
   sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
                           "Ant Simulator");
   window.setFramerateLimit(60);
 
-  World world(WINDOW_WIDTH, WINDOW_HEIGHT);
+  World world(WORLD_WIDTH, WORLD_HEIGHT);
   sf::Clock clock;
 
   while (window.isOpen()) {
