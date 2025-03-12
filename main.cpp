@@ -25,7 +25,9 @@ int main() {
 
     float deltaTime = clock.restart().asSeconds();
 
-    world.update(deltaTime);
+    if (!world.isSimulationPaused()) {
+      world.update(deltaTime);
+    }
 
     window.clear(sf::Color::White);
     world.draw(window);
