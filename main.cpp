@@ -1,12 +1,13 @@
 #include "World.h"
 #include <SFML/Graphics.hpp>
 
-int main() {
-  const unsigned int WINDOW_WIDTH = 600;
-  const unsigned int WINDOW_HEIGHT = 500;
-  const unsigned int WORLD_WIDTH = 500;
-  const unsigned int WORLD_HEIGHT = 500;
+const float ASPECT_RATIO = 16.f / 9.f;
+const unsigned int WINDOW_WIDTH = 900;
+const unsigned int WINDOW_HEIGHT = WINDOW_WIDTH / ASPECT_RATIO;
+const unsigned int WORLD_WIDTH = 700;
+const unsigned int WORLD_HEIGHT = 500;
 
+int main() {
   sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
                           "Ant Simulator");
   window.setFramerateLimit(60);
