@@ -11,7 +11,9 @@ World::World(unsigned int width, unsigned int height)
     : width(width), height(height),
       centerPoint(sf::Vector2f(width / 2.f, height / 2.f)),
       addAntButton(sf::Vector2f(510.f, 0.f), sf::Vector2f(80.f, 40.f), 10.f,
-                   5.f, 64, "Add Ant") {
+                   5.f, 64, "Add Ant"),
+      pausePlayButton(sf::Vector2f(510.f, 50.f), sf::Vector2f(80.f, 40.f), 10.f,
+                      5.f, 64, "||") {
   ants.reserve(NUM_ANTS);
   setupWorld();
 }
@@ -54,6 +56,7 @@ void World::draw(sf::RenderWindow &window) {
   }
   window.draw(bounds);
   window.draw(addAntButton);
+  window.draw(pausePlayButton);
 }
 
 void World::handleEvents(const sf::Event &event) {
@@ -62,6 +65,8 @@ void World::handleEvents(const sf::Event &event) {
     sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
     if (addAntButton.contains(mousePos)) {
       addAnt();
+    } else if (pausePlayButton.contains(mousePos)) {
+      isPaused = !isPaused;
     } else if (mousePos.x < width && mousePos.y < height) {
       updateTarget({mousePos.x, mousePos.y});
     }

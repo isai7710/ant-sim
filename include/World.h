@@ -17,6 +17,7 @@ public:
   void handleEvents(const sf::Event &event);
   void updateTarget(sf::Vector2f position);
   void addPheromone(const Pheromone &pheromone);
+  bool isSimulationPaused() const { return isPaused; }
 
 private:
   void setupWorld();
@@ -35,7 +36,10 @@ private:
   std::vector<Pheromone> pheromones;
 
   RoundedButton addAntButton;
+  RoundedButton pausePlayButton;
   sf::Font font;
+
+  bool isPaused = false;
 
   sf::CircleShape target{5.0f};
   sf::Vector2f targetPosition;
