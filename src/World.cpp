@@ -10,10 +10,10 @@
 World::World(unsigned int width, unsigned int height)
     : width(width), height(height),
       centerPoint(sf::Vector2f(width / 2.f, height / 2.f)),
-      addAntButton(sf::Vector2f(510.f, 0.f), sf::Vector2f(80.f, 40.f), 10.f,
-                   5.f, 64, "Add Ant"),
-      pausePlayButton(sf::Vector2f(510.f, 50.f), sf::Vector2f(80.f, 40.f), 10.f,
-                      5.f, 64, "||") {
+      addAntButton(sf::Vector2f(width + 10.f, 0.f), sf::Vector2f(80.f, 40.f),
+                   10.f, 5.f, 64, "Add Ant"),
+      pausePlayButton(sf::Vector2f(width + 10.f, 50.f),
+                      sf::Vector2f(80.f, 40.f), 10.f, 5.f, 64, "||") {
   ants.reserve(NUM_ANTS);
   setupWorld();
 }
